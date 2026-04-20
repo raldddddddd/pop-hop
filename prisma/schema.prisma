@@ -29,6 +29,8 @@ model User {
   events Event[]
   applications Application[]
   booths Booth[]
+  sentMessages     Message[] @relation("SentMessages")
+  receivedMessages Message[] @relation("ReceivedMessages")
 }
 
 model Event {
@@ -46,6 +48,7 @@ model Event {
   applications Application[]
   booths Booth[]
   announcements Announcement[]
+  messages Message[]
 }
 
 model Application {
@@ -92,4 +95,18 @@ model Announcement {
 
   eventId String
   event   Event @relation(fields: [eventId], references: [id])
+}
+
+model Message {
+  id        String   @id @default(uuid())
+  content   String
+  createdAt DateTime @default(now())
+
+  senderId   String
+  receiverId String
+  eventId    String
+
+  sender   User  @relation("SentMessages", fields: [senderId], references: [id])
+  receiver User  @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  event    Event @relation(fields: [eventId], references: [id])
 }

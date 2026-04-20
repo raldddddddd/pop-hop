@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
 
 export default function VendorDashboard() {
   const [applications, setApplications] = useState<any[]>([])
@@ -83,6 +84,15 @@ export default function VendorDashboard() {
                       {app.event.description}
                     </p>
                   )}
+
+                  <div className="mt-2">
+                    <Link 
+                      href={`/dashboard/chat/${app.eventId}/${app.event.organizerId}`}
+                      className="text-sm bg-blue-100 text-blue-700 px-3 py-1 rounded hover:bg-blue-200"
+                    >
+                      💬 Chat with Organizer
+                    </Link>
+                  </div>
 
                   {/* 🔥 ANNOUNCEMENTS */}
                   {announcementsMap[app.event.id]?.length > 0 && (

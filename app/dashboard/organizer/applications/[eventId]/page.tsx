@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
+import Link from 'next/link'
 
 export default function ApplicationsPage() {
   const { eventId } = useParams()
@@ -142,6 +143,12 @@ export default function ApplicationsPage() {
                     </button>
                   </>
                 )}
+                <Link
+                  href={`/dashboard/chat/${eventId}/${app.userId}`}
+                  className="bg-blue-100 hover:bg-blue-200 text-blue-700 px-3 py-1 flex items-center justify-center rounded"
+                >
+                  💬 Chat
+                </Link>
               </div>
             </div>
           ))}
