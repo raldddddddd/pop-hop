@@ -1,26 +1,245 @@
 @import "tailwindcss";
 
+/* =============================================
+   POP HOP – DESIGN SYSTEM
+   Avant Basic × Y2K × Local Market Energy
+   ============================================= */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Brand Colors */
+  --ph-yellow:   #FFE034;
+  --ph-green:    #3DDA55;
+  --ph-magenta:  #E8186D;
+  --ph-orange:   #FF6B2C;
+  --ph-blue:     #7EC8E3;
+  --ph-lavender: #C9B8FF;
+  --ph-black:    #0D0D0D;
+  --ph-white:    #FAFAF5;
+
+  /* Semantic (60-30-10 rule) */
+  --background:  #F5F5F5;   /* 60%: Light gray page background */
+  --surface:     #FFFFFF;    /* Card/surface white */
+  --foreground:  var(--ph-black);
+  /* Accents (30%): ph-yellow, ph-magenta, ph-green, ph-blue, ph-orange */
+  /* Details (10%): ph-black for outlines and strong contrasts */
+
+  /* Typography */
+  --font-display: 'Syne', sans-serif;
+  --font-body:    'Space Grotesk', sans-serif;
+
+  /* Borders */
+  --border-width: 2.5px;
+  --border-color: var(--ph-black);
+  --radius-sm:    8px;
+  --radius-md:    14px;
+  --radius-lg:    20px;
+  --radius-pill:  999px;
+
+  /* Shadows (pop-art offset) */
+  --shadow-sm:  3px 3px 0 var(--ph-black);
+  --shadow-md:  4px 4px 0 var(--ph-black);
+  --shadow-lg:  6px 6px 0 var(--ph-black);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* =============================================
+   BASE
+   ============================================= */
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background-color: #F5F5F5;
+  color: var(--ph-black);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+  line-height: 1.1;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* =============================================
+   COMPONENTS
+   ============================================= */
+
+/* --- POP CARD --- */
+.ph-card {
+  background: var(--ph-white);
+  border: var(--border-width) solid var(--ph-black);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
+.ph-card:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* --- BUTTONS --- */
+.ph-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 20px;
+  border-radius: var(--radius-pill);
+  border: var(--border-width) solid var(--ph-black);
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  box-shadow: var(--shadow-sm);
+  white-space: nowrap;
+  text-decoration: none;
+}
+.ph-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
+}
+
+.ph-btn-primary   { background: var(--ph-green);   color: var(--ph-black); }
+.ph-btn-secondary { background: var(--ph-magenta); color: var(--ph-white); }
+.ph-btn-accent    { background: var(--ph-orange);  color: var(--ph-white); }
+.ph-btn-ghost     { background: var(--ph-white);   color: var(--ph-black); }
+
+.ph-btn:hover { transform: translate(-1px, -1px); box-shadow: var(--shadow-md); }
+
+/* --- PILL BADGE --- */
+.ph-badge {
+  display: inline-block;
+  padding: 2px 12px;
+  border-radius: var(--radius-pill);
+  border: 2px solid var(--ph-black);
+  font-weight: 700;
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.ph-badge-green   { background: var(--ph-green);   color: var(--ph-black); }
+.ph-badge-magenta { background: var(--ph-magenta); color: var(--ph-white); }
+.ph-badge-blue    { background: var(--ph-blue);    color: var(--ph-black); }
+.ph-badge-yellow  { background: var(--ph-yellow);  color: var(--ph-black); }
+.ph-badge-orange  { background: var(--ph-orange);  color: var(--ph-white); }
+.ph-badge-lavender{ background: var(--ph-lavender);color: var(--ph-black); }
+
+/* --- LOGO PILL --- */
+.ph-logo-pill {
+  display: inline-flex;
+  align-items: center;
+  background: var(--ph-green);
+  border: var(--border-width) solid var(--ph-black);
+  border-radius: var(--radius-pill);
+  padding: 6px 18px;
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  box-shadow: var(--shadow-sm);
+}
+
+/* --- INPUT --- */
+.ph-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: var(--border-width) solid var(--ph-black);
+  border-radius: var(--radius-sm);
+  background: var(--ph-white);
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  outline: none;
+  transition: box-shadow 0.15s;
+  box-shadow: var(--shadow-sm);
+}
+.ph-input:focus {
+  box-shadow: 0 0 0 3px var(--ph-magenta), var(--shadow-sm);
+}
+
+/* --- LABEL --- */
+.ph-label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  color: var(--ph-black);
+}
+
+/* --- SECTION --- */
+.ph-section {
+  padding: 24px 16px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+/* --- DIVIDER --- */
+.ph-divider {
+  border: none;
+  border-top: 2px solid var(--ph-black);
+  margin: 20px 0;
+  opacity: 0.15;
+}
+
+/* --- STATUS INDICATOR --- */
+.ph-status-dot {
+  display: inline-block;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  border: 2px solid var(--ph-black);
+  margin-right: 6px;
+}
+
+/* --- CHECKERBOARD PATTERN (decorative) --- */
+.ph-checker {
+  background-image:
+    repeating-conic-gradient(var(--ph-black) 0% 25%, transparent 0% 50%);
+  background-size: 14px 14px;
+  opacity: 0.06;
+}
+
+/* --- STAT CARD --- */
+.ph-stat-card {
+  background: var(--ph-white);
+  border: var(--border-width) solid var(--ph-black);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.ph-stat-value {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1;
+}
+.ph-stat-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+
+/* --- FLOATING MASCOT --- */
+@keyframes ph-float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-8px); }
+}
+.ph-float { animation: ph-float 3s ease-in-out infinite; }
+
+/* --- PAGE TRANSITIONS --- */
+@keyframes ph-fade-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.ph-fade-in { animation: ph-fade-in 0.35s ease both; }
+
+/* --- MOBILE SAFE AREA --- */
+.ph-bottom-safe { padding-bottom: env(safe-area-inset-bottom, 16px); }

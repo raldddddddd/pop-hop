@@ -13,7 +13,7 @@ export default function BoothPage() {
       .then(res => res.json())
       .then(setBooths)
 
-    fetch(`/api/applications/${eventId}`)
+    fetch(`/api/applications/event/${eventId}`)
       .then(res => res.json())
       .then(data =>
         setApplications(data.filter((a: any) => a.status === 'APPROVED'))
@@ -23,12 +23,15 @@ export default function BoothPage() {
   const assign = async (boothId: string, vendorId: string) => {
     const res = await fetch('/api/booths/assign', {
       method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ boothId, vendorId }),
     })
 
     if (res.ok) {
       alert('Booth assigned')
       location.reload()
+    } else {
+      alert('Failed to assign booth')
     }
   }
 
@@ -46,14 +49,14 @@ export default function BoothPage() {
               <div>
                 <p className="font-medium">Booth #{booth.number}</p>
 
-                {booth.isTaken && (
+                {booth.vendorId && (
                   <p className="text-sm text-gray-500">
                     Assigned to: {booth.vendor?.name}
                   </p>
                 )}
               </div>
 
-              {!booth.isTaken && (
+              {!booth.vendorId && (
                 <select
                   onChange={(e) => assign(booth.id, e.target.value)}
                   defaultValue=""

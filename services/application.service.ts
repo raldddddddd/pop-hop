@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma'
+import { ApplicationStatus } from '@prisma/client'
 
 export async function applyToEvent(data: {
   userId: string
@@ -34,6 +35,6 @@ export async function getApplicationsByEvent(eventId: string) {
 export async function updateApplicationStatus(id: string, status: string) {
   return prisma.application.update({
     where: { id },
-    data: { status },
+    data: { status: status as ApplicationStatus },
   })
 }

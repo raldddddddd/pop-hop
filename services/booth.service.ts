@@ -11,14 +11,13 @@ export async function assignBooth(boothId: string, vendorId: string) {
 
   if (!booth) throw new Error('Booth not found')
 
-  if (booth.isTaken) {
+  if (booth.vendorId) {
     throw new Error('Booth already assigned')
   }
 
   return prisma.booth.update({
     where: { id: boothId },
     data: {
-      isTaken: true,
       vendorId,
     },
   })

@@ -12,6 +12,12 @@ enum Role {
   ORGANIZER
 }
 
+enum ApplicationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 model User {
   id        String   @id @default(uuid())
   email     String   @unique
@@ -19,9 +25,13 @@ model User {
   name      String
   role      Role
   createdAt DateTime @default(now())
+
   events Event[]
   applications Application[]
   booths Booth[]
+  sentMessages     Message[] @relation("SentMessages")
+  receivedMessages Message[] @relation("ReceivedMessages")
+  vendorProfile    VendorProfile?
 }
 
 model Event {
@@ -31,17 +41,25 @@ model Event {
   date        DateTime
   boothLimit  Int
   price       Float
+  address     String?
+  imageUrl    String?
+  startTime   String?
+  endTime     String?
+  durationDays Int?     @default(1)
   createdAt   DateTime @default(now())
 
   organizerId String
   organizer   User @relation(fields: [organizerId], references: [id])
+
   applications Application[]
   booths Booth[]
+  announcements Announcement[]
+  messages Message[]
 }
 
 model Application {
   id        String   @id @default(uuid())
-  status    String   @default("PENDING")
+  status    ApplicationStatus @default(PENDING)
   createdAt DateTime @default(now())
 
   userId  String
@@ -49,16 +67,64 @@ model Application {
 
   user  User  @relation(fields: [userId], references: [id])
   event Event @relation(fields: [eventId], references: [id])
+
+  boothId String?
+  booth   Booth? @relation(fields: [boothId], references: [id])
+
+  paymentProof String?      // image URL
+  paymentStatus String @default("UNPAID") // UNPAID | PENDING | VERIFIED | REJECTED
+
+  @@unique([userId, eventId])
 }
 
 model Booth {
   id        String  @id @default(uuid())
   number    Int
-  isTaken   Boolean @default(false)
 
   eventId String
   event   Event @relation(fields: [eventId], references: [id])
 
   vendorId String?
   vendor   User? @relation(fields: [vendorId], references: [id])
+
+  applications Application[]
+
+  @@unique([eventId, number])
+  @@unique([eventId, vendorId])
+}
+
+model Announcement {
+  id        String   @id @default(uuid())
+  title     String
+  content   String
+  createdAt DateTime @default(now())
+
+  eventId String
+  event   Event @relation(fields: [eventId], references: [id])
+}
+
+model Message {
+  id        String   @id @default(uuid())
+  content   String
+  createdAt DateTime @default(now())
+
+  senderId   String
+  receiverId String
+  eventId    String
+
+  sender   User  @relation("SentMessages", fields: [senderId], references: [id])
+  receiver User  @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  event    Event @relation(fields: [eventId], references: [id])
+}
+
+model VendorProfile {
+  id          String   @id @default(uuid())
+  description String?
+  productType String?
+  address     String?
+  socialLinks String?
+  imageUrl    String?
+
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id])
 }
