@@ -21,7 +21,13 @@ export async function registerUser(data: {
     },
   })
 
-  return user
+  const token = jwt.sign(
+    { userId: user.id, role: user.role, name: user.name },
+    JWT_SECRET,
+    { expiresIn: '1d' }
+  )
+
+  return { user, token }
 }
 
 export async function loginUser(data: {
@@ -39,7 +45,7 @@ export async function loginUser(data: {
   if (!isValid) throw new Error('Invalid password')
 
   const token = jwt.sign(
-    { userId: user.id, role: user.role },
+    { userId: user.id, role: user.role, name: user.name },
     JWT_SECRET,
     { expiresIn: '1d' }
   )

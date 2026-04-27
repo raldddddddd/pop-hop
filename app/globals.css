@@ -17,7 +17,7 @@
   --ph-white:    #FAFAF5;
 
   /* Semantic (60-30-10 rule) */
-  --background:  #F5F5F5;   /* 60%: Light gray page background */
+  --background:  var(--ph-white);   /* 60%: Light page background */
   --surface:     #FFFFFF;    /* Card/surface white */
   --foreground:  var(--ph-black);
   /* Accents (30%): ph-yellow, ph-magenta, ph-green, ph-blue, ph-orange */
@@ -49,7 +49,7 @@
 html, body {
   margin: 0;
   padding: 0;
-  background-color: #F5F5F5;
+  background-color: var(--background);
   color: var(--ph-black);
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;

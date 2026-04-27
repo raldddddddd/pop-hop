@@ -16,6 +16,7 @@ enum ApplicationStatus {
   PENDING
   APPROVED
   REJECTED
+  WAITLISTED
 }
 
 model User {
@@ -34,8 +35,15 @@ model User {
   vendorProfile    VendorProfile?
 }
 
+enum EventStatus {
+  DRAFT
+  PUBLISHED
+  CLOSED
+}
+
 model Event {
   id          String   @id @default(uuid())
+  status      EventStatus @default(DRAFT)
   title       String
   description String?
   date        DateTime
@@ -106,6 +114,7 @@ model Announcement {
 model Message {
   id        String   @id @default(uuid())
   content   String
+  read      Boolean  @default(false)
   createdAt DateTime @default(now())
 
   senderId   String

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { getUserFromStorage } from '@/lib/auth'
+import { getClientUser } from '@/lib/auth'
 
 export default function OrganizerDashboard() {
   const router = useRouter()
@@ -13,9 +13,10 @@ export default function OrganizerDashboard() {
   const [announceContents, setAnnounceContents] = useState<{ [key: string]: string }>({})
 
   useEffect(() => {
-    const user = getUserFromStorage()
-    if (!user || user.role !== 'ORGANIZER') { router.push('/login'); return }
-    fetch('/api/events').then(r => r.json()).then(setEvents)
+    getClientUser().then(user => {
+      if (!user || user.role !== 'ORGANIZER') { router.push('/login'); return }
+      fetch('/api/events/organizer').then(r => r.json()).then(setEvents)
+    })
   }, [])
 
   useEffect(() => {
@@ -37,7 +38,16 @@ export default function OrganizerDashboard() {
     })
     setAnnounceTitles(p => ({ ...p, [eventId]: '' }))
     setAnnounceContents(p => ({ ...p, [eventId]: '' }))
-    fetch('/api/events').then(r => r.json()).then(setEvents)
+    fetch('/api/events/organizer').then(r => r.json()).then(setEvents)
+  }
+
+  const updateEventStatus = async (eventId: string, status: string) => {
+    await fetch(`/api/events/${eventId}/status`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status })
+    })
+    fetch('/api/events/organizer').then(r => r.json()).then(setEvents)
   }
 
   const totalRevenue = events.reduce((sum, e) => sum + (e.price * (e._count?.applications || 0)), 0)
@@ -107,9 +117,21 @@ export default function OrganizerDashboard() {
                   {/* Title & Date */}
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px', marginBottom: '8px' }}>
                     <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '1.1rem', margin: 0, lineHeight: 1.2 }}>{event.title}</h2>
-                    <span className="ph-badge ph-badge-green" style={{ flexShrink: 0 }}>
-                      {new Date(event.date).toLocaleDateString('en-PH', { month: 'short', day: 'numeric' })}
-                    </span>
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                      <span className="ph-badge ph-badge-green" style={{ flexShrink: 0 }}>
+                        {new Date(event.date).toLocaleDateString('en-PH', { month: 'short', day: 'numeric' })}
+                      </span>
+                      <select 
+                        value={event.status} 
+                        onChange={e => updateEventStatus(event.id, e.target.value)}
+                        className="ph-input"
+                        style={{ padding: '2px 8px', fontSize: '0.7rem', width: 'auto', fontWeight: 700, borderRadius: '999px', background: event.status === 'PUBLISHED' ? 'var(--ph-green)' : event.status === 'CLOSED' ? 'var(--ph-magenta)' : 'var(--ph-yellow)' }}
+                      >
+                        <option value="DRAFT">DRAFT</option>
+                        <option value="PUBLISHED">PUBLISHED</option>
+                        <option value="CLOSED">CLOSED</option>
+                      </select>
+                    </div>
                   </div>
 
                   {/* Meta */}

@@ -55,7 +55,12 @@ function RegisterForm() {
       const data = await res.json().catch(() => null)
 
       if (res.ok) {
-        router.push('/login?registered=true')
+        window.dispatchEvent(new Event('ph-auth-change'))
+        if (form.role === 'VENDOR') {
+          router.push('/dashboard/vendor/profile')
+        } else {
+          router.push('/dashboard/organizer')
+        }
       } else {
         setError(data?.message || data || 'Registration failed. Please try again.')
       }
@@ -69,13 +74,16 @@ function RegisterForm() {
   return (
     <div style={{
       minHeight: '100dvh',
-      background: '#F5F5F5',
+      background: 'var(--background)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
       padding: '24px 16px',
     }}>
       <div style={{ width: '100%', maxWidth: '400px' }}>
+        <Link href="/" style={{ display: 'inline-block', marginBottom: '16px', fontSize: '0.85rem', fontWeight: 700, color: 'var(--ph-black)', textDecoration: 'none' }}>
+          ← Back to home
+        </Link>
 
         {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: '28px' }}>

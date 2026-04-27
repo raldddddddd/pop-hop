@@ -5,21 +5,21 @@ import Link from 'next/link'
 function AlienBug({ size = 80 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <line x1="22" y1="18" x2="16" y2="8" stroke="#0D0D0D" strokeWidth="3" strokeLinecap="round"/>
-      <circle cx="15" cy="7" r="3" fill="#FF6B2C" stroke="#0D0D0D" strokeWidth="2"/>
-      <line x1="42" y1="18" x2="48" y2="8" stroke="#0D0D0D" strokeWidth="3" strokeLinecap="round"/>
-      <circle cx="49" cy="7" r="3" fill="#FF6B2C" stroke="#0D0D0D" strokeWidth="2"/>
-      <ellipse cx="32" cy="38" rx="20" ry="18" fill="#FF6B2C" stroke="#0D0D0D" strokeWidth="3"/>
-      <ellipse cx="23" cy="33" rx="6" ry="8" fill="white" stroke="#0D0D0D" strokeWidth="2.5"/>
-      <ellipse cx="41" cy="33" rx="6" ry="8" fill="white" stroke="#0D0D0D" strokeWidth="2.5"/>
-      <circle cx="23" cy="34" r="3" fill="#0D0D0D"/>
-      <circle cx="41" cy="34" r="3" fill="#0D0D0D"/>
-      <circle cx="25" cy="31" r="1.5" fill="white"/>
-      <circle cx="43" cy="31" r="1.5" fill="white"/>
-      <line x1="14" y1="44" x2="6" y2="52" stroke="#0D0D0D" strokeWidth="3" strokeLinecap="round"/>
-      <line x1="14" y1="50" x2="6" y2="58" stroke="#0D0D0D" strokeWidth="3" strokeLinecap="round"/>
-      <line x1="50" y1="44" x2="58" y2="52" stroke="#0D0D0D" strokeWidth="3" strokeLinecap="round"/>
-      <line x1="50" y1="50" x2="58" y2="58" stroke="#0D0D0D" strokeWidth="3" strokeLinecap="round"/>
+      <line x1="22" y1="18" x2="16" y2="8" stroke="#0D0D0D" strokeWidth="3" strokeLinecap="round" />
+      <circle cx="15" cy="7" r="3" fill="#FF6B2C" stroke="#0D0D0D" strokeWidth="2" />
+      <line x1="42" y1="18" x2="48" y2="8" stroke="#0D0D0D" strokeWidth="3" strokeLinecap="round" />
+      <circle cx="49" cy="7" r="3" fill="#FF6B2C" stroke="#0D0D0D" strokeWidth="2" />
+      <ellipse cx="32" cy="38" rx="20" ry="18" fill="#FF6B2C" stroke="#0D0D0D" strokeWidth="3" />
+      <ellipse cx="23" cy="33" rx="6" ry="8" fill="white" stroke="#0D0D0D" strokeWidth="2.5" />
+      <ellipse cx="41" cy="33" rx="6" ry="8" fill="white" stroke="#0D0D0D" strokeWidth="2.5" />
+      <circle cx="23" cy="34" r="3" fill="#0D0D0D" />
+      <circle cx="41" cy="34" r="3" fill="#0D0D0D" />
+      <circle cx="25" cy="31" r="1.5" fill="white" />
+      <circle cx="43" cy="31" r="1.5" fill="white" />
+      <line x1="14" y1="44" x2="6" y2="52" stroke="#0D0D0D" strokeWidth="3" strokeLinecap="round" />
+      <line x1="14" y1="50" x2="6" y2="58" stroke="#0D0D0D" strokeWidth="3" strokeLinecap="round" />
+      <line x1="50" y1="44" x2="58" y2="52" stroke="#0D0D0D" strokeWidth="3" strokeLinecap="round" />
+      <line x1="50" y1="50" x2="58" y2="58" stroke="#0D0D0D" strokeWidth="3" strokeLinecap="round" />
     </svg>
   )
 }
@@ -28,7 +28,7 @@ const MARQUEE_ITEMS = ['POP HOP! ✦', 'ANGELES CITY ✦', 'FLEA MARKET ✦', 'V
 
 export default function HomePage() {
   return (
-    <div style={{ background: 'var(--ph-yellow)', minHeight: '100dvh', overflowX: 'hidden' }}>
+    <div style={{ background: '#FFFFFF', minHeight: '100dvh', overflowX: 'hidden' }}>
 
       {/* ── MARQUEE TICKER ── */}
       <div style={{
@@ -78,8 +78,8 @@ export default function HomePage() {
           color: 'var(--ph-black)',
           margin: '0 0 16px',
         }}>
-          THE FLEA<br />MARKET<br />
-          <span style={{ color: 'var(--ph-magenta)' }}>OS.</span>
+          POP<br />
+          <span style={{ color: 'var(--ph-magenta)' }}>HOP!</span>
         </h1>
 
         <p style={{
@@ -217,7 +217,7 @@ export default function HomePage() {
         textAlign: 'center',
       }}>
         <span style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '0.85rem' }}>
-          POP HOP! © 2025 · Angeles City, Pampanga
+          POP HOP! © 2026 · Angeles City, Pampanga
         </span>
       </footer>
 

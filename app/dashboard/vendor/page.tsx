@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { getClientUser } from '@/lib/auth'
 
 export default function VendorDashboard() {
   const [applications, setApplications] = useState<any[]>([])
@@ -9,17 +10,28 @@ export default function VendorDashboard() {
   const [hasMore, setHasMore] = useState(false)
   const [announcementsMap, setAnnouncementsMap] = useState<{ [key: string]: any[] }>({})
   const [userName, setUserName] = useState('')
+  const [needsProfile, setNeedsProfile] = useState(false)
 
   useEffect(() => {
-    setUserName(localStorage.getItem('name') || 'Vendor')
-    const userId = localStorage.getItem('userId')
-    if (!userId) return
-    fetch(`/api/applications/user/${userId}?page=${page}`)
-      .then(r => r.json())
-      .then(res => {
-        setApplications(res.data || [])
-        setHasMore(res.hasMore)
-      })
+    getClientUser().then(user => {
+      if (!user) return
+      setUserName(user.name || 'Vendor')
+      const userId = user.userId
+      
+      // Check if profile exists
+      fetch(`/api/vendor-profile?userId=${userId}`)
+        .then(r => r.json())
+        .then(res => {
+          if (!res.data || !res.data.description) setNeedsProfile(true)
+        })
+
+      fetch(`/api/applications/user/${userId}?page=${page}`)
+        .then(r => r.json())
+        .then(res => {
+          setApplications(res.data || [])
+          setHasMore(res.hasMore)
+        })
+    })
   }, [page])
 
   useEffect(() => {
@@ -65,6 +77,12 @@ export default function VendorDashboard() {
           {applications.length} active application{applications.length !== 1 ? 's' : ''}
         </p>
       </div>
+
+      {needsProfile && (
+        <div style={{ background: 'var(--ph-magenta)', color: 'white', padding: '12px 16px', textAlign: 'center', fontSize: '0.85rem', fontWeight: 700 }}>
+          Missing Profile! <Link href="/dashboard/vendor/profile" style={{ color: 'var(--ph-yellow)', textDecoration: 'underline' }}>Complete your profile to get approved faster ➔</Link>
+        </div>
+      )}
 
       {/* ── QUICK ACTIONS ── */}
       <div style={{ padding: '16px', maxWidth: '480px', margin: '0 auto' }}>

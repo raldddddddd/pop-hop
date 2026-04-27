@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
+import { getClientUser } from '@/lib/auth'
 
 export default function ChatPage() {
   const { eventId, otherUserId } = useParams()
@@ -12,8 +13,9 @@ export default function ChatPage() {
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    const id = localStorage.getItem('userId')
-    setCurrentUserId(id)
+    getClientUser().then(user => {
+      if (user) setCurrentUserId(user.userId)
+    })
   }, [])
 
   const fetchMessages = async () => {
@@ -64,7 +66,7 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="bg-gray-100 min-h-screen flex flex-col items-center py-6">
+    <div className=" min-h-screen flex flex-col items-center py-6">
       <div className="w-full max-w-3xl bg-white rounded-lg shadow-lg flex flex-col h-[80vh]">
         
         {/* Header */}

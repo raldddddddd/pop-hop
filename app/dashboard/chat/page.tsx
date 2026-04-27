@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { getClientUser } from '@/lib/auth'
 
 export default function ChatInboxPage() {
   const [threads, setThreads] = useState<any[]>([])
@@ -9,17 +10,18 @@ export default function ChatInboxPage() {
   const [userId, setUserId] = useState<string | null>(null)
 
   useEffect(() => {
-    const uid = localStorage.getItem('userId')
-    setUserId(uid)
-    if (!uid) { setLoading(false); return }
+    getClientUser().then(user => {
+      if (!user) { setLoading(false); return }
+      setUserId(user.userId)
 
-    fetch(`/api/messages?userId=${uid}`)
-      .then(r => r.json())
-      .then(res => {
-        setThreads(res.data || [])
-        setLoading(false)
-      })
-      .catch(() => setLoading(false))
+      fetch(`/api/messages?userId=${user.userId}`)
+        .then(r => r.json())
+        .then(res => {
+          setThreads(res.data || [])
+          setLoading(false)
+        })
+        .catch(() => setLoading(false))
+    })
   }, [])
 
   const timeAgo = (dateStr: string) => {
@@ -39,7 +41,7 @@ export default function ChatInboxPage() {
     role === 'ORGANIZER' ? 'var(--ph-magenta)' : 'var(--ph-blue)'
 
   return (
-    <div style={{ background: '#F5F5F5', minHeight: '100dvh', paddingBottom: '40px' }}>
+    <div style={{ background: 'var(--background)', minHeight: '100dvh', paddingBottom: '40px' }}>
 
       {/* Header */}
       <div style={{ background: '#FFFFFF', borderBottom: '1px solid #EBEBEB', padding: '20px 16px 16px', position: 'sticky', top: '56px', zIndex: 10 }}>

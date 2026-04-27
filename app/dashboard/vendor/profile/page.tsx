@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { getClientUser } from '@/lib/auth'
 
 export default function VendorProfilePage() {
   const router = useRouter()
@@ -15,10 +16,11 @@ export default function VendorProfilePage() {
   })
 
   useEffect(() => {
-    const userId = localStorage.getItem('userId')
-    if (!userId) return
+    getClientUser().then(user => {
+      if (!user) { router.push('/login'); return }
+      const userId = user.userId
 
-    fetch(`/api/vendor-profile?userId=${userId}`)
+      fetch(`/api/vendor-profile?userId=${userId}`)
       .then(res => res.json())
       .then(res => {
         if (res.data) {
@@ -31,7 +33,9 @@ export default function VendorProfilePage() {
           })
         }
       })
+    })
   }, [])
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value })
@@ -39,13 +43,13 @@ export default function VendorProfilePage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    const userId = localStorage.getItem('userId')
-    if (!userId) return
+    const user = await getClientUser()
+    if (!user) return
 
     const res = await fetch('/api/vendor-profile', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId, ...form })
+      body: JSON.stringify({ userId: user.userId, ...form })
     })
 
     if (res.ok) {
@@ -57,16 +61,26 @@ export default function VendorProfilePage() {
   }
 
   return (
-    <div className="bg-gray-100 min-h-screen py-8">
-      <div className="max-w-2xl mx-auto">
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold text-gray-800">My Vendor Profile</h1>
-          <button onClick={() => router.back()} className="text-sm text-gray-500 hover:text-gray-700">
-            &larr; Back
-          </button>
-        </div>
+    <div style={{ background: 'var(--ph-yellow)', minHeight: '100dvh', paddingBottom: '40px' }}>
+      {/* ── HEADER ── */}
+      <div style={{
+        background: 'var(--ph-black)',
+        padding: '24px 16px 20px',
+        borderBottom: '2.5px solid var(--ph-black)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between'
+      }}>
+        <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '1.5rem', color: 'var(--ph-white)', margin: 0 }}>
+          My Vendor Profile
+        </h1>
+        <button onClick={() => router.back()} className="ph-btn ph-btn-ghost" style={{ fontSize: '0.75rem', padding: '6px 12px' }}>
+          &larr; Back
+        </button>
+      </div>
 
-        <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow p-6 space-y-5">
+      <div style={{ padding: '24px 16px', maxWidth: '600px', margin: '0 auto' }}>
+        <form onSubmit={handleSubmit} className="ph-card" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
           {/* Image preview */}
           {form.imageUrl && (
@@ -81,75 +95,78 @@ export default function VendorProfilePage() {
           )}
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Profile Image URL</label>
+            <label className="ph-label">Profile Image URL</label>
             <input
               type="url"
               name="imageUrl"
               value={form.imageUrl}
               onChange={handleChange}
               placeholder="https://..."
-              className="w-full border rounded-lg p-2.5 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="ph-input"
             />
-            <p className="text-xs text-gray-400 mt-1">Paste a direct link to your photo or logo</p>
+            <p style={{ fontSize: '0.75rem', color: '#666', marginTop: '4px' }}>Paste a direct link to your photo or logo</p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">About Your Business</label>
+            <label className="ph-label">About Your Business</label>
             <textarea
               name="description"
               value={form.description}
               onChange={handleChange}
               rows={3}
               placeholder="Tell organizers about your business..."
-              className="w-full border rounded-lg p-2.5 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="ph-input"
+              style={{ resize: 'vertical' }}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Product Type</label>
+            <label className="ph-label">Product Type</label>
             <input
               type="text"
               name="productType"
               value={form.productType}
               onChange={handleChange}
               placeholder="e.g. Thrift Clothes, Handmade Jewelry, Food"
-              className="w-full border rounded-lg p-2.5 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="ph-input"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Business Address</label>
+            <label className="ph-label">Business Address</label>
             <input
               type="text"
               name="address"
               value={form.address}
               onChange={handleChange}
               placeholder="e.g. Angeles City, Pampanga"
-              className="w-full border rounded-lg p-2.5 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="ph-input"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Social Media Links</label>
+            <label className="ph-label">Social Media Links</label>
             <textarea
               name="socialLinks"
               value={form.socialLinks}
               onChange={handleChange}
               rows={2}
               placeholder="Instagram: https://instagram.com/myshop&#10;Facebook: https://facebook.com/myshop"
-              className="w-full border rounded-lg p-2.5 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="ph-input"
+              style={{ resize: 'vertical' }}
             />
           </div>
 
           <button
             type="submit"
-            className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2.5 rounded-lg transition-colors"
+            className="ph-btn ph-btn-primary"
+            style={{ width: '100%', fontSize: '1rem', padding: '12px' }}
           >
             Save Profile
           </button>
 
           {saved && (
-            <p className="text-center text-green-600 font-medium">✅ Profile saved successfully!</p>
+            <p style={{ textAlign: 'center', color: 'var(--ph-green)', fontWeight: 700, marginTop: '8px' }}>✅ Profile saved successfully!</p>
           )}
         </form>
       </div>

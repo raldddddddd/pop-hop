@@ -43,7 +43,7 @@ export default function ApplicationsPage() {
   }
 
   return (
-    <div className="bg-gray-100 min-h-screen">
+    <div className=" min-h-screen">
       <div className="max-w-5xl mx-auto p-6">
         <h1 className="text-2xl font-semibold mb-4">Applications</h1>
 

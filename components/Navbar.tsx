@@ -26,31 +26,47 @@ function AlienBug({ size = 28 }: { size?: number }) {
   )
 }
 
-function readAuth() {
-  return {
-    role: localStorage.getItem('role'),
-    name: localStorage.getItem('name'),
-  }
-}
+// Removed readAuth in favor of fetch
 
 export default function Navbar() {
   const pathname = usePathname()
   const [auth, setAuth] = useState<{ role: string | null; name: string | null }>({ role: null, name: null })
+  const [unread, setUnread] = useState(0)
   const [mounted, setMounted] = useState(false)
 
-  const syncAuth = () => setAuth(readAuth())
+  const syncAuth = async () => {
+    try {
+      const res = await fetch('/api/auth/me')
+      if (res.ok) {
+        const data = await res.json()
+        setAuth({ role: data.user.role, name: data.user.name })
+
+        const unreadRes = await fetch('/api/messages/unread')
+        if (unreadRes.ok) {
+          const { unreadCount } = await unreadRes.json()
+          setUnread(unreadCount)
+        }
+      } else {
+        setAuth({ role: null, name: null })
+        setUnread(0)
+      }
+    } catch {
+      // Ignore
+    }
+  }
 
   useEffect(() => {
     setMounted(true)
     syncAuth()
 
-    // Re-sync on tab-level storage changes (different tabs)
-    window.addEventListener('storage', syncAuth)
-    // Re-sync on same-tab auth changes (login/logout dispatch this)
     window.addEventListener('ph-auth-change', syncAuth)
+    
+    // Poll for unread messages every 30 seconds
+    const interval = setInterval(syncAuth, 30000)
+    
     return () => {
-      window.removeEventListener('storage', syncAuth)
       window.removeEventListener('ph-auth-change', syncAuth)
+      clearInterval(interval)
     }
   }, [])
 
@@ -64,9 +80,10 @@ export default function Navbar() {
   // Hide navbar on auth pages
   if (pathname === '/login' || pathname === '/register') return null
 
-  const handleLogout = () => {
-    localStorage.clear()
+  const handleLogout = async () => {
+    await fetch('/api/auth/logout', { method: 'POST' })
     setAuth({ role: null, name: null })
+    setUnread(0)
     window.dispatchEvent(new Event('ph-auth-change'))
     window.location.href = '/'
   }
@@ -75,8 +92,8 @@ export default function Navbar() {
 
   return (
     <nav style={{
-      background: '#FFFFFF',
-      borderBottom: '2px solid #EBEBEB',
+      background: 'var(--ph-yellow)',
+      borderBottom: '2.5px solid var(--ph-black)',
       padding: '0 16px',
       height: '56px',
       display: 'flex',
@@ -113,14 +130,40 @@ export default function Navbar() {
           <>
             <Link href="/dashboard/organizer" style={navLink(pathname === '/dashboard/organizer')}>Dashboard</Link>
             <Link href="/dashboard/organizer/create-event" style={navLink(false)}>+ Event</Link>
-            <Link href="/dashboard/chat" style={navLink(pathname.startsWith('/dashboard/chat'))}>💬 Chat</Link>
+            <Link href="/dashboard/chat" style={navLink(pathname.startsWith('/dashboard/chat'))}>
+              💬 Chat
+              {unread > 0 && (
+                <span style={{
+                  position: 'absolute', top: '-6px', right: '-6px',
+                  background: 'var(--ph-magenta)', color: 'white',
+                  borderRadius: '12px', padding: '1px 5px',
+                  fontSize: '0.65rem', fontWeight: 800,
+                  border: '1.5px solid var(--ph-black)'
+                }}>
+                  {unread}
+                </span>
+              )}
+            </Link>
           </>
         )}
         {role === 'VENDOR' && (
           <>
             <Link href="/dashboard/vendor" style={navLink(pathname === '/dashboard/vendor')}>Dashboard</Link>
             <Link href="/dashboard/vendor/events" style={navLink(pathname === '/dashboard/vendor/events')}>Events</Link>
-            <Link href="/dashboard/chat" style={navLink(pathname.startsWith('/dashboard/chat'))}>💬 Chat</Link>
+            <Link href="/dashboard/chat" style={navLink(pathname.startsWith('/dashboard/chat'))}>
+              💬 Chat
+              {unread > 0 && (
+                <span style={{
+                  position: 'absolute', top: '-6px', right: '-6px',
+                  background: 'var(--ph-magenta)', color: 'white',
+                  borderRadius: '12px', padding: '1px 5px',
+                  fontSize: '0.65rem', fontWeight: 800,
+                  border: '1.5px solid var(--ph-black)'
+                }}>
+                  {unread}
+                </span>
+              )}
+            </Link>
           </>
         )}
 
@@ -159,12 +202,13 @@ export default function Navbar() {
 }
 
 const navLink = (active: boolean): React.CSSProperties => ({
-  color: active ? 'var(--ph-magenta)' : '#444',
-  fontWeight: active ? 700 : 600,
+  color: active ? 'var(--ph-magenta)' : 'var(--ph-black)',
+  fontWeight: active ? 800 : 700,
   fontSize: '0.85rem',
   textDecoration: 'none',
   padding: '5px 10px',
   borderRadius: '8px',
-  background: active ? 'rgba(232,24,109,0.08)' : 'transparent',
+  background: active ? 'rgba(0,0,0,0.05)' : 'transparent',
   transition: 'background 0.15s, color 0.15s',
+  position: 'relative',
 })

@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { getClientUser } from '@/lib/auth'
 
 export default function VendorEventsPage() {
   const [events, setEvents] = useState<any[]>([])
@@ -13,24 +14,25 @@ export default function VendorEventsPage() {
   }, [])
 
   useEffect(() => {
-    const userId = localStorage.getItem('userId')
-    if (!userId || userId === 'null') return
-    fetch(`/api/applications/user/${userId}`)
-      .then(r => r.ok ? r.json() : null)
-      .then(res => {
-        if (!res) return
-        setAppliedEvents((res.data || []).map((a: any) => a.eventId))
-      })
+    getClientUser().then(user => {
+      if (!user) return
+      fetch(`/api/applications/user/${user.userId}`)
+        .then(r => r.ok ? r.json() : null)
+        .then(res => {
+          if (!res) return
+          setAppliedEvents((res.data || []).map((a: any) => a.eventId))
+        })
+    })
   }, [])
 
   const handleApply = async (eventId: string) => {
-    const userId = localStorage.getItem('userId')
-    if (!userId) return
+    const user = await getClientUser()
+    if (!user) return
     setApplying(eventId)
     const res = await fetch('/api/applications/apply', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId, eventId }),
+      body: JSON.stringify({ userId: user.userId, eventId }),
     })
     if (res.ok) {
       setAppliedEvents(prev => [...prev, eventId])
@@ -45,7 +47,7 @@ export default function VendorEventsPage() {
     new Date(d).toLocaleDateString('en-PH', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
 
   return (
-    <div style={{ background: '#F5F5F5', minHeight: '100dvh', paddingBottom: '40px' }}>
+    <div style={{ background: 'var(--background)', minHeight: '100dvh', paddingBottom: '40px' }}>
 
       {/* Header */}
       <div style={{ background: '#FFFFFF', borderBottom: '1px solid #EBEBEB', padding: '20px 16px 16px' }}>

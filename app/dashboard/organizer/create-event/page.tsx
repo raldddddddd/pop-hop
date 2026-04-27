@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { getClientUser } from '@/lib/auth'
 
 export default function CreateEventPage() {
   const router = useRouter()
@@ -30,8 +31,8 @@ export default function CreateEventPage() {
     if (!form.boothLimit || Number(form.boothLimit) <= 0) return alert('Booth limit must be greater than 0')
     if (Number(form.price) < 0) return alert('Price cannot be negative')
 
-    const organizerId = localStorage.getItem('userId')
-    if (!organizerId) return alert('You must be logged in')
+    const user = await getClientUser()
+    if (!user) return alert('You must be logged in')
 
     const res = await fetch('/api/events/create', {
       method: 'POST',
@@ -41,7 +42,7 @@ export default function CreateEventPage() {
         boothLimit: Number(form.boothLimit),
         price: Number(form.price),
         durationDays: Number(form.durationDays),
-        organizerId
+        organizerId: user.userId
       })
     })
 
@@ -55,7 +56,7 @@ export default function CreateEventPage() {
   }
 
   return (
-    <div className="bg-gray-100 min-h-screen py-8">
+    <div className=" min-h-screen py-8">
       <div className="max-w-2xl mx-auto">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold text-gray-800">Create Event</h1>

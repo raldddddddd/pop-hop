@@ -33,10 +33,6 @@ export default function LoginPage() {
       const data = await res.json()
 
       if (res.ok) {
-        localStorage.setItem('token', data.token)
-        localStorage.setItem('role', data.user.role)
-        localStorage.setItem('userId', data.user.id)
-        localStorage.setItem('name', data.user.name)
         // Notify Navbar to re-sync immediately
         window.dispatchEvent(new Event('ph-auth-change'))
 
@@ -54,13 +50,16 @@ export default function LoginPage() {
   return (
     <div style={{
       minHeight: '100dvh',
-      background: '#F5F5F5',
+      background: 'var(--background)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
       padding: '24px 16px',
     }}>
       <div style={{ width: '100%', maxWidth: '400px' }}>
+        <Link href="/" style={{ display: 'inline-block', marginBottom: '16px', fontSize: '0.85rem', fontWeight: 700, color: 'var(--ph-black)', textDecoration: 'none' }}>
+          ← Back to home
+        </Link>
 
         {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: '28px' }}>
